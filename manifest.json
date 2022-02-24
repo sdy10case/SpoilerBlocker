@@ -1,0 +1,12 @@
+{
+    "manifest_version": 3,
+    "name": "Spoiler Blocker",
+    "version": "1.0.0",
+
+    "action": {
+        "default_popup": "popup.html"
+      },
+    "description": "A helpful chrome extension to free users from having to worry about spoilers on the internet.",
+    "permissions": ["tabs"]
+
+}
