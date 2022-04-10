@@ -11,7 +11,7 @@
     "contextMenus",
     "storage",
     "tabs",
-    "https://grounded-pager-345917.uc.r.appspot.com/content/"
+    "https://grounded-pager-345917.uc.r.appspot.com/"
   ],
   "content_scripts": [
     {
