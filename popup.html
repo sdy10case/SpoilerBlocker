@@ -1,10 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <link rel="stylesheet" href="popup.css">
-  <title></title>
 </head>
 <body>
-    <p>Hello World!</p>
+	<h1>Test Heading</h1>
+	<p>My first paragraph.</p>
+	<form name="loginForm">
+		<label for="email1">Email:</label><br>
+		<input type="text" id="email" name="email"><br>
+		<label for="password1">Password:</label><br>
+		<input type="text" id="password" name="password">
+		<!---- input type="button" id = "Submit" value="Submit" onClick="popup.js" -->
+		<div id="add"></div>
+	</form>
+	<button type="button" id="Submit">Submit</button>
+	<script src="popup.js"></script>
 </body>
+
 </html>
