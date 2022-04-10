@@ -28,10 +28,10 @@
   "browser_action": {
   	"default_popup": "popup.html",
   	"default_icon": {
-  		"16": "16x_monkey.png",
-  		"32": "32x_monkey.png",
-  		"48": "48x_monkey.png",
-  		"128": "128x_monkey.png"
+  		"16": "Icons\16x_monkey.png",
+  		"32": "Icons\32x_monkey.png",
+  		"48": "Icons\48x_monkey.png",
+  		"128": "Icons\128x_monkey.png"
   	}
   }
 }
