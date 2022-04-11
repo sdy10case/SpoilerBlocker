@@ -1,7 +1,7 @@
 //to do
 
 //privledged users report does not go to request table
-
+import Cookies from js-cookie
 chrome.storage.local.set({ 'userId': 9 })
 var markMenuId
 var unblockMenuId
