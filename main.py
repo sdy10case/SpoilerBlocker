@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,17 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import sys
+from mysite.wsgi import application
 
-if __name__ == '__main__':
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
-    try:
-        from django.core.management import execute_from_command_line
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable? Did you "
-            "forget to activate a virtual environment?"
-        ) from exc
-    execute_from_command_line(sys.argv)
+# App Engine by default looks for a main.py file at the root of the app
+# directory with a WSGI-compatible object called app.
+# This file imports the WSGI-compatible object of your Django app,
+# application from mysite/wsgi.py and renames it app so it is discoverable by
+# App Engine without additional configuration.
+# Alternatively, you can add a custom entrypoint field in your app.yaml:
+# entrypoint: gunicorn -b :$PORT mysite.wsgi
+app = application
