@@ -1,7 +1,10 @@
 //to do
+//test without make body
+//generating register information of userid, startdate, enddate
+//login and register need information back
 
 //privledged users report does not go to request table
-import Cookies from js-cookie
+
 chrome.storage.local.set({ 'userId': 9 })
 var markMenuId
 var unblockMenuId
@@ -81,26 +84,7 @@ sendRequest = function (userId, e, u, s, userInput, t, placehold, user_role) {
             isResolved: iR
         })
     })
-
-
 }
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-const csrftoken = getCookie('csrftoken');
 
 class makebody {
     constructor(role, u, id, sC, isBlocked) {
@@ -128,7 +112,7 @@ sendContent = function (e, u, s, userInput, isBlocked, role) {
     //isResolved bool
     iR = false;
 
-    const requestinfo = new makebody (user_role, url, id, sC, isBlocked)
+    const requestinfo = new makebody(user_role, url, id, sC, "True")
     //console.log(requestinfo)
     /*
     requestinfo = {
@@ -145,14 +129,16 @@ sendContent = function (e, u, s, userInput, isBlocked, role) {
         credentials: 'include',
         headers: {
             'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
-            'X-CSRFToken': csrftoken,
+            'X-Requested-With': 'XMLHttpRequest' //Necessary to work with request.is_ajax()
         },
         body: JSON.stringify(requestinfo)
         //mode: 'cors'
     };
 
     fetch('https://grounded-pager-345917.uc.r.appspot.com/content/', requestOptions)
+        .then(response => response.json())
+        .then(data => console.log(data))
+        //.catch(error => console.log('ERROR'))
     /*
     fetch('https://grounded-pager-345917.uc.r.appspot.com')
         
@@ -269,46 +255,45 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
        
     }
 */
-    if (message.from && message.from === "login") {
+    if (message.from && message.from === "loginNOT") {
         credentials = message.action
-        alert("Email: " + credentials[0] + ", Password: " + credentials[1])
+        //credentials = [email, password]
         if (credentials[0] == "" || credentials[1] == "") {
             alert("Please provide a valid email and password")
             return;
         }
+        url = "https://grounded-pager-345917.uc.r.appspot.com/login/" + credentials[0] + "/" + credentials[1] + "/"
+        fetch(url)
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.log('ERROR'))
+    }
 
-        //Should be a get or put 
-        const res = fetch("https://grounded-pager-345917.uc.r.appspot.com/", {
+    else if (message.from && message.from === "login") {
+        //credentials = message.action
+        credentials = ["email@email", "drowssap", "Ur", "Mom"]
+        if (credentials[0] == "" || credentials[1] == "") {
+            alert("Please provide a valid email and password")
+            return;
+        }
+        //make a fetch request to webapp which include generated userID
+        const res = fetch("https://grounded-pager-345917.uc.r.appspot.com/register/", {
             method: 'POST',
+            credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest' //Necessary to work with request.is_ajax()
             },
             body: JSON.stringify({
                 email: credentials[0],
-                password: credentials[1]
+                password: credentials[1],
+                name: credentials[2],
+                surname: credentials[3],
+                user_role: "baseuser"
             })
         })
-        const body = res;
-        return body;
-    }
-
-    else if (message.from && message.from === "register") {
-        credentials = message.action
-        //make a fetch request to webapp which include generated userID
-        const res = fetch("https://grounded-pager-345917.uc.r.appspot.com/", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: message.action[0],
-                password: message.action[1],
-                userID: 5
-            })
-        })
-        const body = res.json();
-        alert(body)
-        return body;
+            .then(response => response.json())
+            .then(data => console.log(data))
     }
 })
 
