@@ -2,6 +2,9 @@
   "name": "See No Evil",
   "manifest_version": 2,
   "version": "1.0",
+	"web_accessible_resources": [
+		"Icons/*"
+	],
   "background": {
     "scripts": [
       "background.js"
@@ -11,7 +14,10 @@
     "contextMenus",
     "storage",
     "tabs",
-    "https://grounded-pager-345917.uc.r.appspot.com/"
+    "activeTab",
+    "scripting",
+    "https://grounded-pager-345917.uc.r.appspot.com/content/",
+    "<all_urls>"
   ],
   "content_scripts": [
     {
@@ -22,7 +28,7 @@
       "js": [
         "content_script.js"
       ],
-      "run_at": "document_end"
+      "run_at": "document_idle"
     }
   ],
   "browser_action": {
