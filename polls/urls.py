@@ -13,15 +13,18 @@
 # limitations under the License.
 
 from django.urls import path, re_path
-
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
 
 app_name = 'polls'
 urlpatterns = [
-    re_path(r'^$', views.index, name='index'),
-    re_path(r'^<str:url>/$', views.get_content_list, name='get_content_list'),
-    re_path(r'^content/$', views.content, name='content'),
-    re_path(r'^request/$', views.request, name='request'),
-    re_path(r'^newuser/$', views.newuser, name='newuser'),
-    re_path(r'^login/$', views.login, name='user')
-]
+    path('', views.index, name='index'),
+    path('content/', views.content, name='content'),
+    path('request/', views.request, name='request'),
+    path('register/', views.register, name='register'),
+    path('view_request_list/<int:puid>/', views.view_request_list, name='view_request_list'),
+    path('view_content_list/', views.view_content_list, name='view_content_list'),
+    path('login/<str:email_inp>/<str:password_inp>/', views.login, name='login'),
+    path('<path:url>/', views.get_content_list, name='get_content_list')
+] #+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

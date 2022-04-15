@@ -1,0 +1,44 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
+    <form action="{% url 'polls:view_request_list' puid %}" method="post">
+        <fieldset>
+            {% if create_request_exists %}
+            <legend><h1>Create Requests</h1></legend>
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            <div class="table">
+            {% for request in create_request_exists %}
+                <div class="row">
+                    <div class="cell"><label for="request{{ forloop.counter }}">Approve</label><br></div>
+                    <div class="cell"><input type="checkbox" name="approve_create_request{{ request.r_id }}" id="request{{ forloop.counter }}" value="True"></div>
+                    <div class="cell"><label for="request{{ forloop.counter }}">Disapprove</label><br></div>
+                    <div class="cell"><input type="checkbox" name="dissaprove_create_request{{ request.r_id }}" id="request{{ forloop.counter }}" value="True"></div>
+                    <div class="cell"><p>ContenttoReplace:{{request.identifier}}&emsp;User:{{request.baseuserid}}&emsp;Reason:{{request.reason}}&emsp;Placeholder:{{request.placeholder}}&emsp;URL:{{request.url}}</p></div>
+                </div>
+            {% endfor %}
+            </div>
+            {% else %}
+            <p>No create_requests are available.</p>
+            {% endif %}
+        </fieldset>
+        <fieldset>
+            {% if report_request_exists %}
+            <legend><h1>Report Requests</h1></legend>
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            <div class="table">
+            {% for request in report_request_exists %}
+                <div class="row">
+                    <div class="cell"><label for="request{{ forloop.counter }}">Approve</label><br></div>
+                    <div class="cell"><input type="checkbox" name="approve_report_request{{ forloop.counter }}" id="request{{ forloop.counter }}" value="{{ request.r_id }}"></div>
+                    <div class="cell"><label for="request{{ forloop.counter }}">Disapprove</label><br></div>
+                    <div class="cell"><input type="checkbox" name="disapprove_report_request{{ forloop.counter }}" id="request{{ forloop.counter }}" value="{{ request.r_id }}"></div>
+                    <div class="cell"><p>ContentbeingReplaced:{{request.identifier}}&emsp;User:{{request.baseuserid}}&emsp;Reason:{{request.reason}}&emsp;Placeholder:{{request.placeholder}}&emsp;URL:{{request.url}}</p></div>
+                </div>
+            {% endfor %}
+            </div>
+            {% else %}
+            <p>No report_requests are available.</p>
+            {% endif %}
+        </fieldset>
+        <input type="reset" value="Refresh">
+        <input type="submit" value="Done">
+        </form>

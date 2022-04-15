@@ -17,7 +17,7 @@ from django.utils import timezone
 import datetime
 
 class Account(models.Model):
-    userid = models.AutoField(primary_key = True, unique=True, blank=True)
+    userid = models.AutoField(primary_key = True, unique=True)
     name = models.CharField(max_length=50)
     surname = models.CharField(max_length=50)
     password = models.CharField(max_length=50)
@@ -45,10 +45,10 @@ class Priviligeduser(Account):
 class Baseuser(Account):
     maxcontent = models.IntegerField(blank=True, null=True)
     dailycontentmarked = models.IntegerField(blank=True, null=True)
-    maxmetdate = models.DateField(blank=True, null=True)
+    maxmetdate = models.DateTimeField(blank=True, null=True)
     maxmet = models.BooleanField(blank=True, null=True)
     def reset_limit(self):
-        return self.maxmetdate <= timezone.now() - datetime.timedelta(days=1)
+        return self.maxmetdate <= timezone.now() - datetime.timedelta(days=1) and self.maxmet==True
 
     class Meta:
         db_table = 'baseuser'
@@ -57,8 +57,8 @@ class Baseuser(Account):
 
 class Request(models.Model):
     r_id = models.AutoField(primary_key=True, unique = True)
-    baseuserid = models.OneToOneField(Baseuser, models.DO_NOTHING, db_column='userid', blank=True, null=True)
-    time_stamp = models.DateTimeField(auto_now_add=True)
+    baseuserid = models.ForeignKey(Baseuser, models.DO_NOTHING, db_column='baseuserid', blank=True, null=True)
+    time_stamp = models.DateTimeField(auto_now=True)
     user_role = models.CharField(max_length=30)
     url = models.CharField(max_length=500)
     identifier = models.CharField(max_length=300)
@@ -79,8 +79,8 @@ class Createrequest(Request):
 class Content(models.Model):
     c_id = models.AutoField(primary_key=True, unique = True)
     priviligeduserid = models.OneToOneField('Priviligeduser', models.DO_NOTHING,  db_column='priviligeduserid', blank=True, null=True)
-    create_r = models.OneToOneField('Createrequest', models.DO_NOTHING, db_column='r_id', blank=True, null=True)
-    time_stamp = models.DateTimeField(auto_now_add=True)
+    create_r_id = models.OneToOneField('Createrequest', models.DO_NOTHING, db_column='create_r_id', blank=True, null=True)
+    time_stamp = models.DateTimeField(auto_now=True)
     user_role = models.CharField(max_length=30)
     url = models.CharField(max_length=500)
     identifier = models.CharField(max_length=300)

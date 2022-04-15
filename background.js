@@ -117,7 +117,7 @@ sendRequest = function (userId, e, u, s, sC, requestType, placehold, user_role, 
         body: JSON.stringify(requestinfo)
     };
     console.log(requestOptions)
-    url = 'https://grounded-pager-345917.uc.r.appspot.com/request/'
+    url = 'http://127.0.0.1:8000/request/'
     fetch(url, requestOptions)
         .then(response => response.json())
         .then(data => console.log(data))
@@ -327,7 +327,7 @@ chrome.runtime.onMessage.addListener(function (message, _sender, sendResponse) {
             sendResponse("Bad request")
             return true;
         }
-        var urlBad = "https://grounded-pager-345917.uc.r.appspot.com/" + encodeURIComponent(message.action) + "/";
+        var urlBad = "http://127.0.0.1:8000/" + encodeURIComponent(message.action) + "/";
         url = newURL(urlBad)
         //alert(url + "\n \n" + urlBad)
         fetch(url)
@@ -351,7 +351,7 @@ chrome.runtime.onMessage.addListener(function (message, _sender, sendResponse) {
             alert("Please provide a valid email and password")
             return;
         }
-        url = "https://grounded-pager-345917.uc.r.appspot.com/login/" + credentials[0] + "/" + credentials[1] + "/"
+        url = "http://127.0.0.1:8000/login/" + credentials[0] + "/" + credentials[1] + "/"
         fetch(url)
             .then(response => response.json())
             .then(data => setLoginStore(data))
