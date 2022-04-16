@@ -12,7 +12,7 @@
                     <div class="cell"><input type="checkbox" name="approve_create_request{{ request.r_id }}" id="request{{ forloop.counter }}" value="True"></div>
                     <div class="cell"><label for="request{{ forloop.counter }}">Disapprove</label><br></div>
                     <div class="cell"><input type="checkbox" name="dissaprove_create_request{{ request.r_id }}" id="request{{ forloop.counter }}" value="True"></div>
-                    <div class="cell"><p>ContenttoReplace:{{request.identifier}}&emsp;User:{{request.baseuserid}}&emsp;Reason:{{request.reason}}&emsp;Placeholder:{{request.placeholder}}&emsp;URL:{{request.url}}</p></div>
+                    <div class="cell"><p>ContenttoReplace:{{request.identifier}}&emsp;User:{{request.baseuserid.userid}}&emsp;Reason:{{request.reason}}&emsp;Placeholder:{{request.placeholder}}&emsp;URL:{{request.url}}</p></div>
                 </div>
             {% endfor %}
             </div>
@@ -31,7 +31,7 @@
                     <div class="cell"><input type="checkbox" name="approve_report_request{{ forloop.counter }}" id="request{{ forloop.counter }}" value="{{ request.r_id }}"></div>
                     <div class="cell"><label for="request{{ forloop.counter }}">Disapprove</label><br></div>
                     <div class="cell"><input type="checkbox" name="disapprove_report_request{{ forloop.counter }}" id="request{{ forloop.counter }}" value="{{ request.r_id }}"></div>
-                    <div class="cell"><p>ContentbeingReplaced:{{request.identifier}}&emsp;User:{{request.baseuserid}}&emsp;Reason:{{request.reason}}&emsp;Placeholder:{{request.placeholder}}&emsp;URL:{{request.url}}</p></div>
+                    <div class="cell"><p>ContentbeingReplaced:{{request.identifier}}&emsp;User:{{request.baseuserid.userid}}&emsp;Reason:{{request.reason}}&emsp;Placeholder:{{request.placeholder}}&emsp;URL:{{request.url}}</p></div>
                 </div>
             {% endfor %}
             </div>

@@ -1,6 +1,6 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
-    <form action="{% url 'polls:view_content_list' %}" method="get">
+    <form action="{% url 'polls:view_content_list' url_inp %}" method="post">
         <fieldset>
             {% if content_exists %}
             <legend><h1>Content</h1></legend>
@@ -8,18 +8,13 @@
             <div class="table">
             {% for content in content_exists %}
                 <div class="row">
-                    <div class="cell"><label for="content{{ forloop.counter }}">Approve</label><br></div>
-                    <div class="cell"><input type="checkbox" name="content" id="content{{ forloop.counter }}" value="{{ content.c_id }}"></div>
-                    <div class="cell"><label for="content{{ forloop.counter }}">Disapprove</label><br></div>
-                    <div class="cell"><input type="checkbox" name="content" id="content{{ forloop.counter }}" value="{{ content.c_id }}"></div>
-                    <div class="cell"><p>Content:{{content.identifier}}&emsp;Reason:{{content.reason}}&emsp;Placeholder:{{content.placeholder}}&emsp;URL:{{content.url}}</p></div>
+                    <div class="cell"><p>Content:{{content.identifier}}&emsp;Reason:{{content.reason}}&emsp;Placeholder:{{content.placeholder}}</p></div>
                 </div>
             {% endfor %}
             </div>
             {% else %}
-            <p>No content is available for this url.</p>
+            <p>No content is blocked for this url.</p>
             {% endif %}
         </fieldset>
-        <input type="reset" value="Refresh">
         <input type="submit" value="Done">
-        </form>
+    </form>

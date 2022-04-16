@@ -1,0 +1,69 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
+    <form action="{% url 'polls:view_user_list' %}" method="post">
+        <fieldset>
+            {% if user_exists %}
+            <legend><h1>Baseusers</h1></legend>
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            <div class="table">
+            {% for user in user_exists %}
+                <div class="row">
+                    <div class="cell"><label for="baseuser{{ forloop.counter }}">Update to Mod</label><br></div>
+                    <div class="cell"><input type="checkbox" name="baseuser_to_mod{{ user.userid }}" id="baseuser{{ forloop.counter }}" value="True"></div>
+                    <div class="cell"><label for="baseuser{{ forloop.counter }}">Update to Admin</label><br></div>
+                    <div class="cell"><input type="checkbox" name="baseuser_to_admin{{ user.userid }}" id="baseuser{{ forloop.counter }}" value="True"></div>
+                    <div class="cell"><p> User:{{user.userid}}&emsp;Name:{{user.name}}&emsp;email:{{user.email}}</p></div>
+                    <div class="cell"><label for="baseuser{{ forloop.counter }}">Delete</label><br></div>
+                    <div class="cell"><input type="checkbox" name="delete_baseuser{{ user.userid }}" id="baseuser{{ forloop.counter }}" value="True"></div>
+                </div>
+            {% endfor %}
+            </div>
+            {% else %}
+            <p>No baseusers exist.</p>
+            {% endif %}
+        </fieldset>
+        <fieldset>
+            {% if mod_exists %}
+            <legend><h1>Moderators</h1></legend>
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            <div class="table">
+            {% for user in mod_exists %}
+                <div class="row">
+                    <div class="cell"><label for="mod{{ forloop.counter }}">Demote to Baseuser</label><br></div>
+                    <div class="cell"><input type="checkbox" name="mod_to_baseuser{{ user.userid }}" id="mod{{ forloop.counter }}" value="True"></div>
+                    <div class="cell"><label for="mod{{ forloop.counter }}">Update to Admin</label><br></div>
+                    <div class="cell"><input type="checkbox" name="mod_to_admin{{ user.userid }}" id="mod{{ forloop.counter }}" value="True"></div>
+                    <div class="cell"><p> User:{{user.userid}}&emsp;Name:{{user.name}}&emsp;email:{{user.email}}</p></div>
+                    <div class="cell"><label for="mod{{ forloop.counter }}">Delete</label><br></div>
+                    <div class="cell"><input type="checkbox" name="delete_mod{{ user.userid }}" id="mod{{ forloop.counter }}" value="True"></div>
+                </div>
+            {% endfor %}
+            </div>
+            {% else %}
+            <p>No moderators exist.</p>
+            {% endif %}
+        </fieldset>
+        <fieldset>
+            {% if admin_exists %}
+            <legend><h1>Admins</h1></legend>
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            <div class="table">
+            {% for user in admin_exists %}
+                <div class="row">
+                    <div class="cell"><label for="admin{{ forloop.counter }}">Demote to Baseuser</label><br></div>
+                    <div class="cell"><input type="checkbox" name="admin_to_baseuser{{ user.userid }}" id="admin{{ forloop.counter }}" value="True"></div>
+                    <div class="cell"><label for="admin{{ forloop.counter }}">Demote to Mod</label><br></div>
+                    <div class="cell"><input type="checkbox" name="admin_to_mod{{ user.userid }}" id="admin{{ forloop.counter }}" value="True"></div>
+                    <div class="cell"><p> User:{{user.userid}}&emsp;Name:{{user.name}}&emsp;email:{{user.email}}</p></div>
+                    <div class="cell"><label for="admin{{ forloop.counter }}">Delete</label><br></div>
+                    <div class="cell"><input type="checkbox" name="delete_admin{{ user.userid }}" id="admin{{ forloop.counter }}" value="True"></div>
+                </div>
+            {% endfor %}
+            </div>
+            {% else %}
+            <p>No admins exist.</p>
+            {% endif %}
+        </fieldset>
+        <input type="reset" value="Refresh">
+        <input type="submit" value="Done">
+        </form>
