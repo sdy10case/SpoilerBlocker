@@ -4,7 +4,7 @@
         <fieldset>
             {% if create_request_exists %}
             <legend><h1>Create Requests</h1></legend>
-            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            {% if error_message1 %}<p><strong>{{ error_message1 }}</strong></p>{% endif %}
             <div class="table">
             {% for request in create_request_exists %}
                 <div class="row">
@@ -23,14 +23,14 @@
         <fieldset>
             {% if report_request_exists %}
             <legend><h1>Report Requests</h1></legend>
-            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            {% if error_message2 %}<p><strong>{{ error_message2 }}</strong></p>{% endif %}
             <div class="table">
             {% for request in report_request_exists %}
                 <div class="row">
                     <div class="cell"><label for="request{{ forloop.counter }}">Approve</label><br></div>
-                    <div class="cell"><input type="checkbox" name="approve_report_request{{ forloop.counter }}" id="request{{ forloop.counter }}" value="{{ request.r_id }}"></div>
+                    <div class="cell"><input type="checkbox" name="approve_report_request{{ request.r_id }}" id="request{{ forloop.counter }}" value="True"></div>
                     <div class="cell"><label for="request{{ forloop.counter }}">Disapprove</label><br></div>
-                    <div class="cell"><input type="checkbox" name="disapprove_report_request{{ forloop.counter }}" id="request{{ forloop.counter }}" value="{{ request.r_id }}"></div>
+                    <div class="cell"><input type="checkbox" name="disapprove_report_request{{ request.r_id }}" id="request{{ forloop.counter }}" value="True"></div>
                     <div class="cell"><p>ContentbeingReplaced:{{request.identifier}}&emsp;User:{{request.baseuserid.userid}}&emsp;Reason:{{request.reason}}&emsp;Placeholder:{{request.placeholder}}&emsp;URL:{{request.url}}</p></div>
                 </div>
             {% endfor %}

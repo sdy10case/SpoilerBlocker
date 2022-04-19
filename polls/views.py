@@ -49,26 +49,27 @@ def view_content_list(request, url_inp):
     context = {'content_exists' : content_exists, 'url_inp' : url_inp}
     return render(request, 'polls/content.html', context)
 def view_request_list(request, puid):
+    create_request_exists = Createrequest.objects.all().filter(isresolved = False)
+    report_request_exists = Reportrequest.objects.all().filter(isresolved = False)
     if request.method == "GET":
-        create_request_exists = Createrequest.objects.all().filter(isresolved = False)
-        report_request_exists = Reportrequest.objects.all().filter(isresolved = False)
         context = {'create_request_exists' : create_request_exists, 'report_request_exists' : report_request_exists, 'puid' : puid}
         return render(request, 'polls/request.html', context)
     else:
         privuser = Priviligeduser.objects.get(pk = puid)
+        context = {'create_request_exists' : create_request_exists, 'report_request_exists' : report_request_exists, 'puid' : puid, 'error_message1': "Cannot select both approve and disapprove for a request."}
         for requests in Createrequest.objects.all().filter(isresolved = False):
             approve = request.POST.get('approve_create_request' + str(requests.r_id), False)
             disapprove = request.POST.get('disapprove_create_request' + str(requests.r_id), False)
             if approve and disapprove:
-                return render(request, 'polls/request.html', {
-                'error_message': "Cannot select both approve and disapprove for a request.",
-                })
+                return render(request, 'polls/request.html', context)
             elif approve:
                 requests.isresolved = True
                 requests.save()
                 try:
                     content= Content.objects.get(identifier=requests.identifier)
                     content.isblocked = True
+                    content.reason = requests.reason
+                    content.placeholder = requests.placeholder
                     content.save()
                 except Content.DoesNotExist:
                     newcontent = Content(user_role=requests.user_role, url=requests.url, identifier=requests.identifier, reason=requests.reason, placeholder=requests.placeholder, isblocked=True, create_r_id=requests, priviligeduserid = privuser)
@@ -76,18 +77,17 @@ def view_request_list(request, puid):
             elif disapprove:
                 requests.isresolved = True
                 requests.save()
+        context = {'create_request_exists' : create_request_exists, 'report_request_exists' : report_request_exists, 'puid' : puid, 'error_message2': "Cannot select both approve and disapprove for a request."}
         for requests in Reportrequest.objects.all().filter(isresolved = False):
             approve = request.POST.get('approve_report_request' + str(requests.r_id), False)
             disapprove = request.POST.get('disapprove_report_request' + str(requests.r_id), False)
             if approve and disapprove:
-                return render(request, 'polls/request.html', {
-                'error_message': "Cannot select both approve and disapprove for a request.",
-                })
+                return render(request, 'polls/request.html', context)
             elif approve:
                 requests.isresolved = True
                 requests.save()
                 try:
-                    content= Content.objects.get(identifier=request.identifier)
+                    content= Content.objects.get(identifier=requests.identifier)
                     content.isblocked = False
                     content.reason = requests.reason
                     content.placeholder = requests.placeholder
@@ -99,22 +99,29 @@ def view_request_list(request, puid):
                 requests.save()
         return HttpResponse('Form submitted successfully')
 def view_user_list(request):
+    user_exists = Baseuser.objects.all()
+    mod_exists = Priviligeduser.objects.all().filter(user_role = "moderator")
+    admin_exists = Priviligeduser.objects.all().filter(user_role = "admin")
     if request.method == "GET":
-        user_exists = Baseuser.objects.all()
-        mod_exists = Priviligeduser.objects.all().filter(user_role = "moderator")
-        admin_exists = Priviligeduser.objects.all().filter(user_role = "admin")
         context = {'user_exists' : user_exists, 'mod_exists' : mod_exists, 'admin_exists' : admin_exists}
         return render(request, 'polls/users.html', context)
     else:
+        context = {'user_exists' : user_exists, 'mod_exists' : mod_exists, 'admin_exists' : admin_exists, 'error_message1': "Cannot select multiple options per user."}
         for users in Baseuser.objects.all():
             to_mod = request.POST.get('baseuser_to_mod' + str(users.userid), False)
             to_admin = request.POST.get('baseuser_to_admin' + str(users.userid), False)
             delete = request.POST.get('delete_baseuser' + str(users.userid), False)
             if (to_mod and to_admin) or (to_mod and delete) or (to_admin and delete):
-                return render(request, 'polls/users.html', {
-                'error_message': "Cannot select multiple options per user.",
-                })
-            elif to_mod:
+                return render(request, 'polls/users.html', context)
+            elif not to_mod and not to_admin and not delete:
+                continue
+            for requests in Createrequest.objects.all().filter(baseuserid = users):
+                requests.baseuserid = None
+                requests.save()
+            for requests in Reportrequest.objects.all().filter(baseuserid = users):
+                requests.baseuserid = None
+                requests.save()
+            if to_mod:
                 newmod = Priviligeduser(user_role="moderator", name = users.name, surname = users.surname, email=users.email, password = users.password)
                 newmod.save()
                 users.delete()
@@ -124,16 +131,28 @@ def view_user_list(request):
                 users.delete()
             elif delete:
                 users.delete()
+        context = {'user_exists' : user_exists, 'mod_exists' : mod_exists, 'admin_exists' : admin_exists, 'error_message2': "Cannot select multiple options per user."}
         for users in Priviligeduser.objects.all().filter(user_role = "moderator"):
             to_base = request.POST.get('mod_to_baseuser' + str(users.userid), False)
             to_admin = request.POST.get('mod_to_admin' + str(users.userid), False)
             delete = request.POST.get('delete_mod' + str(users.userid), False)
             if (to_base and to_admin) or (to_base and delete) or (to_admin and delete):
-                return render(request, 'polls/users.html', {
-                'error_message': "Cannot select multiple options per user.",
-                })
+                return render(request, 'polls/users.html', context)
+            elif not to_base and not to_admin and not delete:
+                continue
+            for requests in Createrequest.objects.all().filter(priviligeduserid = users):
+                requests.priviligeduserid = None
+                requests.save()
+            for requests in Reportrequest.objects.all().filter(priviligeduserid = users):
+                requests.priviligeduserid = None
+                requests.save()
+            for requests in Content.objects.all().filter(priviligeduserid = users):
+                requests.priviligeduserid = None
+                requests.save()
+            if to_mod:
+                    requests.baseuserid = None
             elif to_base:
-                newbase = Baseuser(user_role="baseuser", name = users.name, surname = users.surname, email=users.email, password = users.password, maxcontent = 5, dailycontentmarked= 0, maxmet = False, maxmetdate=timezone.now())
+                newbase = Baseuser(name = users.name, surname = users.surname, email=users.email, password = users.password, maxcontent = 5, dailycontentmarked= 0, maxmet = False, maxmetdate=timezone.now())
                 newbase.save()
                 users.delete()
             elif to_admin:
@@ -142,16 +161,26 @@ def view_user_list(request):
                 users.delete()
             elif delete:
                 users.delete()
+        context = {'user_exists' : user_exists, 'mod_exists' : mod_exists, 'admin_exists' : admin_exists, 'error_message3': "Cannot select multiple options per user."}
         for users in Priviligeduser.objects.all().filter(user_role = "admin"):
             to_base = request.POST.get('admin_to_baseuser' + str(users.userid), False)
             to_mod = request.POST.get('admin_to_mod' + str(users.userid), False)
             delete = request.POST.get('delete_admin' + str(users.userid), False)
-            if (to_base and to_admin) or (to_base and delete) or (to_admin and delete):
-                return render(request, 'polls/users.html', {
-                'error_message': "Cannot select multiple options per user.",
-                })
-            elif to_base:
-                newbase = Baseuser(user_role="baseuser", name = users.name, surname = users.surname, email=users.email, password = users.password, maxcontent = 5, dailycontentmarked= 0, maxmet = False, maxmetdate=timezone.now())
+            if (to_base and to_mod) or (to_base and delete) or (to_mod and delete):
+                return render(request, 'polls/users.html', context)
+            elif not to_base and not to_mod and not delete:
+                continue
+            for requests in Createrequest.objects.all().filter(priviligeduserid = users):
+                requests.priviligeduserid = None
+                requests.save()
+            for requests in Reportrequest.objects.all().filter(priviligeduserid = users):
+                requests.priviligeduserid = None
+                requests.save()
+            for content in Content.objects.all().filter(priviligeduserid = users):
+                content.priviligeduserid = None
+                content.save()
+            if to_base:
+                newbase = Baseuser(name = users.name, surname = users.surname, email=users.email, password = users.password, maxcontent = 5, dailycontentmarked= 0, maxmet = False, maxmetdate=timezone.now())
                 newbase.save()
                 users.delete()
             elif to_mod:
@@ -179,6 +208,7 @@ def content(request):
             content_update = json.loads(request.body)
             c = Content.objects.get(pk=content_update['c_id'])
             c.isblocked = False
+            c.reason = content_update['reason']
             c.save()
         data = {'raw':'Success'}
         return JsonResponse(data, safe=False)
@@ -187,21 +217,22 @@ def content(request):
 def request(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         request_object = json.loads(request.body)
-        user = Baseuser.objects.get(pk=request_object['baseuserid'])
-        if not user.maxmet:
-            user.dailycontentmarked += 1
-            if user.dailycontentmarked == user.maxcontent:
-                user.maxmet = True
-                user.maxmetdate=timezone.now()
-            user.save()
-        else:
-            if not user.reset_limit():
-                data = {'raw' : 'maxmet'}
-                return JsonResponse(data, safe=False)
-            user.dailycontentmarked = 1
-            user.maxmet = False
-            user.save()   
+        user = Baseuser.objects.get(pk=request_object['baseuserid'])  
         if request_object['type'] == "create": 
+            if not user.maxmet:
+                if user.dailycontentmarked == user.maxcontent:
+                    user.maxmet = True
+                    user.maxmetdate=timezone.now()
+                else:
+                    user.dailycontentmarked += 1
+                user.save()
+            else:
+                if not user.reset_limit():
+                    data = {'raw' : 'maxmet'}
+                    return JsonResponse(data, safe=False)
+                user.dailycontentmarked = 1
+                user.maxmet = False
+                user.save() 
             for requests in Createrequest.objects.all() : 
                 if requests.identifier == request_object["identifier"] and requests.isresolved == False :
                     data = {'raw':'Already Exists'}
@@ -217,6 +248,7 @@ def request(request):
             newrequest = Createrequest(baseuserid=user, user_role=request_object['user_role'], url=request_object['url'], identifier=request_object['identifier'], reason=request_object['reason'], placeholder=request_object['placeholder'], isresolved=False)
             newrequest.save()
         else:
+            content = Content.objects.get(c_id = request_object['c'])
             for requests in Reportrequest.objects.all() : 
                 if requests.identifier == request_object["identifier"] and requests.isresolved == False :
                     data = {'raw':'Already Exists'}
@@ -228,7 +260,7 @@ def request(request):
                     requests.save()
                     data = {'raw': 'Updated Existing request'}
                     return JsonResponse(data, safe=False)
-            newrequest = Reportrequest(baseuserid=user, user_role=request_object['user_role'], url=request_object['url'], identifier=request_object['identifier'], reason=request_object['reason'], placeholder=request_object['placeholder'], isresolved=False, c=request_object['c'])
+            newrequest = Reportrequest(baseuserid=user, user_role=request_object['user_role'], url=request_object['url'], identifier=request_object['identifier'], reason=request_object['reason'], placeholder=request_object['placeholder'], isresolved=False, c=content)
             newrequest.save()
         data = {'raw':'Success'}
         return JsonResponse(data, safe=False)

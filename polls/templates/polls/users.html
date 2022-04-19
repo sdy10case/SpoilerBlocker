@@ -4,7 +4,7 @@
         <fieldset>
             {% if user_exists %}
             <legend><h1>Baseusers</h1></legend>
-            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            {% if error_message1 %}<p><strong>{{ error_message1 }}</strong></p>{% endif %}
             <div class="table">
             {% for user in user_exists %}
                 <div class="row">
@@ -25,7 +25,7 @@
         <fieldset>
             {% if mod_exists %}
             <legend><h1>Moderators</h1></legend>
-            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            {% if error_message2 %}<p><strong>{{ error_message2 }}</strong></p>{% endif %}
             <div class="table">
             {% for user in mod_exists %}
                 <div class="row">
@@ -46,7 +46,7 @@
         <fieldset>
             {% if admin_exists %}
             <legend><h1>Admins</h1></legend>
-            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            {% if error_message3 %}<p><strong>{{ error_message3 }}</strong></p>{% endif %}
             <div class="table">
             {% for user in admin_exists %}
                 <div class="row">
